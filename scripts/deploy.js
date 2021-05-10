@@ -14,17 +14,25 @@ async function main() {
   await hre.run('compile');
 
   // We get the contract to deploy
+  const PriceFormulaFactory = await hre.ethers.getContractFactory("PriceFormula");
   const PonziTokenFactory = await hre.ethers.getContractFactory("PonziToken");
   const PonziMinterFactory = await hre.ethers.getContractFactory("PonziMinter");
+  const priceFormula = await PriceFormulaFactory.deploy();
+  await priceFormula.deployed();
+  console.log("Price Formula deployed to:", priceFormula.address);
   const ponziToken = await PonziTokenFactory.deploy();
+  await ponziToken.deployed();
+  console.log("Ponzi Token deployed to:", ponziToken.address);
   const ponziMinter = await PonziMinterFactory.deploy(
     ponziToken.address,
+    priceFormula.address,
     '900',
     '1000000687',
     '1000000000'
   );
+  await ponziMinter.deployed();
+  await ponziToken.transferOwnership(ponziMinter.address);
 
-  console.log("Ponzi Token deployed to:", ponziToken.address);
   console.log("Ponzi Minter deployed to:", ponziMinter.address);
 }
 

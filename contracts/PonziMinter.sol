@@ -4,11 +4,13 @@ pragma solidity ^0.6.12;
 import './PonziToken.sol';
 import './PriceFormula.sol';
 
-contract PonziMinter is PriceFormula {
+contract PonziMinter {
     using SafeMath for uint;
 
     PonziToken public token;
-    uint8 public reserveRatio; // precision of 1000
+    PriceFormula public priceFormula;
+
+    uint32 public reserveRatio; // precision of 1000
     uint public deflationFactor;
     uint public deflationIncPerBlock;
     uint public deflationPrecision;
@@ -17,7 +19,8 @@ contract PonziMinter is PriceFormula {
 
     constructor(
       address _token,
-      uint8 _reserveRatio,
+      address _priceFormula,
+      uint32 _reserveRatio,
       uint _deflationIncPerBlock,
       uint _deflationPrecision
     ) public {
@@ -44,7 +47,7 @@ contract PonziMinter is PriceFormula {
     {
         uint reserveBalance = address(this).balance;
         uint tokenSupply = token.totalSupply();
-        uint origReturn = calculatePurchaseReturn(tokenSupply, reserveBalance, reserveRatio, _depositAmount);
+        uint origReturn = priceFormula.calculatePurchaseReturn(tokenSupply, reserveBalance, reserveRatio, _depositAmount);
         uint finalReturn = origReturn.mul(deflationPrecision).div(deflationFactor);
         return finalReturn;
     }
@@ -58,7 +61,7 @@ contract PonziMinter is PriceFormula {
         uint reserveBalance = address(this).balance;
         
         uint tokenSupply = token.totalSupply();
-        uint origReturn = calculateSaleReturn(tokenSupply, reserveBalance, reserveRatio, _sellAmount);
+        uint origReturn = priceFormula.calculateSaleReturn(tokenSupply, reserveBalance, reserveRatio, _sellAmount);
         uint finalReturn = origReturn.mul(deflationFactor).div(deflationPrecision);
         return finalReturn;
     }
