@@ -16,17 +16,16 @@ async function main() {
   // We get the contract to deploy
   const PonziTokenFactory = await hre.ethers.getContractFactory("PonziToken");
   const PonziMinterFactory = await hre.ethers.getContractFactory("PonziMinter");
-  const ponziToken = await PonziTokenFactory.deploy("Hello, Hardhat!");
+  const ponziToken = await PonziTokenFactory.deploy();
   const ponziMinter = await PonziMinterFactory.deploy(
     ponziToken.address,
     '900',
-    '',
-    '1000000'
+    '1000000687',
+    '1000000000'
   );
 
-  await greeter.deployed();
-
   console.log("Ponzi Token deployed to:", ponziToken.address);
+  console.log("Ponzi Minter deployed to:", ponziMinter.address);
 }
 
 // We recommend this pattern to be able to use async/await everywhere
