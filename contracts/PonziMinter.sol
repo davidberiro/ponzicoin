@@ -1,6 +1,5 @@
 pragma solidity ^0.6.12;
 
-//import '@openzeppelin/contracts/math/SafeMath.sol';
 import './PonziToken.sol';
 import './PriceFormula.sol';
 
@@ -25,6 +24,7 @@ contract PonziMinter {
       uint _deflationPrecision
     ) public {
         token = PonziToken(_token);
+        priceFormula = PriceFormula(_priceFormula);
         reserveRatio = _reserveRatio;
         deflationIncPerBlock = _deflationIncPerBlock;
         deflationPrecision = _deflationPrecision;
@@ -43,6 +43,7 @@ contract PonziMinter {
 
     function getPurchaseReturn(uint _depositAmount)
         public
+        view
         returns (uint amount)
     {
         uint reserveBalance = address(this).balance;
@@ -54,6 +55,7 @@ contract PonziMinter {
 
     function getSaleReturn(uint _sellAmount)
         public
+        view
         returns (uint amount)
     {
         require(_sellAmount != 0 && _sellAmount <= token.balanceOf(msg.sender)); // validate input
@@ -88,6 +90,8 @@ contract PonziMinter {
 
     // fallback
     fallback() external payable {
-        buy(0);
+        if (token.owner() == address(this)) {
+            buy(0);
+        }
     }
 }

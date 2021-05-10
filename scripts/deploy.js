@@ -12,6 +12,9 @@ async function main() {
   // If this script is run directly using `node` you may want to call compile 
   // manually to make sure everything is compiled
   await hre.run('compile');
+  const [deployer] = await hre.ethers.getSigners();
+  console.log("Deploying contracts with account:" , deployer.address);
+  console.log("Account balance:", (await deployer.getBalance()).toString());
 
   // We get the contract to deploy
   const PriceFormulaFactory = await hre.ethers.getContractFactory("PriceFormula");
@@ -23,17 +26,28 @@ async function main() {
   const ponziToken = await PonziTokenFactory.deploy();
   await ponziToken.deployed();
   console.log("Ponzi Token deployed to:", ponziToken.address);
+    console.log(ponziToken.address)
+    console.log(priceFormula.address)
   const ponziMinter = await PonziMinterFactory.deploy(
     ponziToken.address,
     priceFormula.address,
-    '900',
+    '900000',
     '1000000687',
     '1000000000'
   );
   await ponziMinter.deployed();
+  await deployer.sendTransaction({
+    to: ponziMinter.address,
+    value: ethers.utils.parseEther("0.000001")
+  });
+  //console.log(ponziToken.functions.mint)
+  await ponziToken.functions.mint(deployer.address, '1000000000000');
   await ponziToken.transferOwnership(ponziMinter.address);
-
   console.log("Ponzi Minter deployed to:", ponziMinter.address);
+  await deployer.sendTransaction({
+    to: ponziMinter.address,
+    value: ethers.utils.parseEther("0.000001")
+  });
 }
 
 // We recommend this pattern to be able to use async/await everywhere
