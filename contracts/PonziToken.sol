@@ -1,16 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.6.12;
 
-
 import "./BEP20.sol";
-import "./IBondingCurveMinter.sol";
 
 // RevaToken with Governance.
 contract PonziToken is BEP20('Ponzi Token', 'PONZI') {
-    // TODO: set address, perhaps configurable
-    IPonziMinter private constant minter = 0x000000000000000000000000000000000000dEaD;
-
-    uint public lastUpdatedPonziBlock = 0;
 
     // @dev Creates `_amount` token to `_to`. Must only be called by the owner.
     function mint(address _to, uint256 _amount) public onlyOwner {
@@ -26,10 +20,6 @@ contract PonziToken is BEP20('Ponzi Token', 'PONZI') {
 
     //@dev See {BEP20-transfer}.
     function transfer(address recipient, uint256 amount) public override returns (bool) {
-        if (block.number > lastUpdatedPonziBlock) {
-          minter.updatePonziRate();
-          lastUpdatedPonziBlock = block.number;
-        }
         _transfer(_msgSender(), recipient, amount);
         return true;
     }

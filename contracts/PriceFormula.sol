@@ -328,7 +328,7 @@ contract PriceFormula {
         uint256 _reserveBalance,
         uint32 _reserveWeight,
         uint256 _amount
-    ) public view override returns (uint256) {
+    ) public view returns (uint256) {
         // validate input
         require(_supply > 0, "ERR_INVALID_SUPPLY");
         require(_reserveBalance > 0, "ERR_INVALID_RESERVE_BALANCE");
@@ -367,7 +367,7 @@ contract PriceFormula {
         uint256 _reserveBalance,
         uint32 _reserveWeight,
         uint256 _amount
-    ) public view override returns (uint256) {
+    ) public view returns (uint256) {
         // validate input
         require(_supply > 0, "ERR_INVALID_SUPPLY");
         require(_reserveBalance > 0, "ERR_INVALID_RESERVE_BALANCE");
@@ -413,7 +413,7 @@ contract PriceFormula {
         uint256 _targetReserveBalance,
         uint32 _targetReserveWeight,
         uint256 _amount
-    ) public view override returns (uint256) {
+    ) public view returns (uint256) {
         // validate input
         require(_sourceReserveBalance > 0 && _targetReserveBalance > 0, "ERR_INVALID_RESERVE_BALANCE");
         require(
@@ -456,7 +456,7 @@ contract PriceFormula {
         uint256 _reserveBalance,
         uint32 _reserveRatio,
         uint256 _amount
-    ) public view override returns (uint256) {
+    ) public view returns (uint256) {
         // validate input
         require(_supply > 0, "ERR_INVALID_SUPPLY");
         require(_reserveBalance > 0, "ERR_INVALID_RESERVE_BALANCE");
@@ -495,7 +495,7 @@ contract PriceFormula {
         uint256 _reserveBalance,
         uint32 _reserveRatio,
         uint256 _amount
-    ) public view override returns (uint256) {
+    ) public view returns (uint256) {
         // validate input
         require(_supply > 0, "ERR_INVALID_SUPPLY");
         require(_reserveBalance > 0, "ERR_INVALID_RESERVE_BALANCE");
@@ -534,7 +534,7 @@ contract PriceFormula {
         uint256 _reserveBalance,
         uint32 _reserveRatio,
         uint256 _amount
-    ) public view override returns (uint256) {
+    ) public view returns (uint256) {
         // validate input
         require(_supply > 0, "ERR_INVALID_SUPPLY");
         require(_reserveBalance > 0, "ERR_INVALID_RESERVE_BALANCE");
@@ -604,7 +604,7 @@ contract PriceFormula {
         uint256 _secondaryReserveBalance,
         uint256 _reserveRateNumerator,
         uint256 _reserveRateDenominator
-    ) public view override returns (uint32, uint32) {
+    ) public view returns (uint32, uint32) {
         if (_primaryReserveStakedBalance == _primaryReserveBalance)
             require(_primaryReserveStakedBalance > 0 || _secondaryReserveBalance > 0, "ERR_INVALID_RESERVE_BALANCE");
         else

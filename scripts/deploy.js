@@ -11,15 +11,22 @@ async function main() {
   //
   // If this script is run directly using `node` you may want to call compile 
   // manually to make sure everything is compiled
-  // await hre.run('compile');
+  await hre.run('compile');
 
   // We get the contract to deploy
-  const Greeter = await hre.ethers.getContractFactory("Greeter");
-  const greeter = await Greeter.deploy("Hello, Hardhat!");
+  const PonziTokenFactory = await hre.ethers.getContractFactory("PonziToken");
+  const PonziMinterFactory = await hre.ethers.getContractFactory("PonziMinter");
+  const ponziToken = await PonziTokenFactory.deploy("Hello, Hardhat!");
+  const ponziMinter = await PonziMinterFactory.deploy(
+    ponziToken.address,
+    '900',
+    '',
+    '1000000'
+  );
 
   await greeter.deployed();
 
-  console.log("Greeter deployed to:", greeter.address);
+  console.log("Ponzi Token deployed to:", ponziToken.address);
 }
 
 // We recommend this pattern to be able to use async/await everywhere
