@@ -23,31 +23,29 @@ async function main() {
   const priceFormula = await PriceFormulaFactory.deploy();
   await priceFormula.deployed();
   console.log("Price Formula deployed to:", priceFormula.address);
-  const ponziToken = await PonziTokenFactory.deploy();
+  const ponziToken = await PonziTokenFactory.deploy(
+    deployer.address, //TODO: this address in ponzipool
+    deployer.address
+  );
   await ponziToken.deployed();
   console.log("Ponzi Token deployed to:", ponziToken.address);
-    console.log(ponziToken.address)
-    console.log(priceFormula.address)
   const ponziMinter = await PonziMinterFactory.deploy(
     ponziToken.address,
     priceFormula.address,
     '900000',
-    '1000000687',
+    //'1000000687',
+    '0',
     '1000000000'
   );
   await ponziMinter.deployed();
   await deployer.sendTransaction({
     to: ponziMinter.address,
-    value: ethers.utils.parseEther("0.000001")
+    value: ethers.utils.parseEther("0.0001")
   });
   //console.log(ponziToken.functions.mint)
-  await ponziToken.functions.mint(deployer.address, '1000000000000');
-  await ponziToken.transferOwnership(ponziMinter.address);
+  await ponziToken.functions.mint(deployer.address, '1000000000000000000');
   console.log("Ponzi Minter deployed to:", ponziMinter.address);
-  await deployer.sendTransaction({
-    to: ponziMinter.address,
-    value: ethers.utils.parseEther("0.000001")
-  });
+  await ponziToken.transferOwnership(ponziMinter.address);
 }
 
 // We recommend this pattern to be able to use async/await everywhere

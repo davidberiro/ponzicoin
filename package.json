@@ -9,6 +9,7 @@
     "hardhat": "^2.2.1"
   },
   "dependencies": {
-    "@openzeppelin/contracts": "^3.4.0"
+    "@openzeppelin/contracts": "^3.4.0",
+    "@pancakeswap/pancake-swap-lib": "0.0.4"
   }
 }

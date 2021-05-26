@@ -1,12 +1,12 @@
 pragma solidity ^0.6.12;
 
-import './PonziToken.sol';
+import './IPonziToken.sol';
 import './PriceFormula.sol';
 
 contract PonziMinter {
     using SafeMath for uint;
 
-    PonziToken public token;
+    IPonziToken public token;
     PriceFormula public priceFormula;
 
     uint32 public reserveRatio; // precision of 1000
@@ -23,7 +23,7 @@ contract PonziMinter {
       uint _deflationIncPerBlock,
       uint _deflationPrecision
     ) public {
-        token = PonziToken(_token);
+        token = IPonziToken(_token);
         priceFormula = PriceFormula(_priceFormula);
         reserveRatio = _reserveRatio;
         deflationIncPerBlock = _deflationIncPerBlock;
@@ -71,27 +71,36 @@ contract PonziMinter {
     function buy(uint _minReturn) public payable updateDeflation() returns (uint amount) {
         amount = getPurchaseReturn(msg.value);
         require(amount != 0 && amount >= _minReturn); // ensure the trade gives something in return and meets the minimum requested amount
-        token.mint(msg.sender, amount); // issue new funds to the caller in the smart token
+        token.mint(address(this), amount); // issue new funds to self, then tranfer for burn tax
+        token.transfer(msg.sender, amount);
         return amount;
     }
 
     function sell(uint _sellAmount, uint _minReturn) public updateDeflation() returns (uint amount) {
-        amount = getSaleReturn(_sellAmount);
+        // we need to do this because of token burn mechanics
+        uint prevBalance = token.balanceOf(address(this));
+        token.transferFrom(msg.sender, address(this), _sellAmount);
+        uint postBalance = token.balanceOf(address(this));
+        uint receivedAmount = postBalance.sub(prevBalance);
+
+        amount = getSaleReturn(receivedAmount);
         require(amount != 0 && amount >= _minReturn); // ensure the trade gives something in return and meets the minimum requested amount
 
         uint reserveBalance = address(this).balance;
 
         uint tokenSupply = token.totalSupply();
         require(amount < reserveBalance || _sellAmount == tokenSupply); // ensure that the trade will only deplete the reserve if the total supply is depleted as well
-        token.burn(msg.sender, _sellAmount); // burn _sellAmount from the caller's balance in the smart token
+
+        token.burn(address(this), receivedAmount); // burn receivedAmount from this
         (msg.sender).transfer(amount);
         return amount;
     }
 
     // fallback
     fallback() external payable {
-        if (token.owner() == address(this)) {
-            buy(0);
-        }
+        //if (token.owner() == address(this)) {
+            //buy(0);
+        //}
+        buy(0);
     }
 }
